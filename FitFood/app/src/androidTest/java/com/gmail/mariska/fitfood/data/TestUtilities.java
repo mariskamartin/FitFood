@@ -34,10 +34,11 @@ public class TestUtilities extends AndroidTestCase {
             String columnName = entry.getKey();
             int idx = valueCursor.getColumnIndex(columnName);
             assertFalse("Column '" + columnName + "' not found. " + error, idx == -1);
-            String expectedValue = entry.getValue().toString();
-            assertEquals("Value '" + entry.getValue().toString() +
-                    "' did not match the expected value '" +
-                    expectedValue + "'. " + error, expectedValue, valueCursor.getString(idx));
+            Object value = entry.getValue();
+            String expectedValue = value != null ? value.toString() : null;
+            String cursorValue = valueCursor.getString(idx);
+            assertEquals("Value '" + cursorValue + "' did not match the expected value '" +
+                    expectedValue + "'. " + error, expectedValue, cursorValue);
         }
     }
 

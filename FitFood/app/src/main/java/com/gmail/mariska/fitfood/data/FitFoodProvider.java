@@ -4,9 +4,11 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import com.gmail.mariska.fitfood.data.FitFoodContract.FoodEntry;
+
 /**
  * Provider for FitFood app
  */
@@ -26,14 +28,14 @@ public class FitFoodProvider extends ContentProvider {
 
     /**
      * Creates URI matcher for FitFood
-     * @return uriMatchter
+     * @return uriMatcher
      */
     static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = FitFoodContract.CONTENT_AUTHORITY;
 
         matcher.addURI(authority, FitFoodContract.PATH_FOOD, FOODS);
-        matcher.addURI(authority, FitFoodContract.PATH_FOOD + "/*", CONCRETE_FOOD);
+        matcher.addURI(authority, FitFoodContract.PATH_FOOD + "/#", CONCRETE_FOOD);
         matcher.addURI(authority, FitFoodContract.PATH_FOOD + "/search/*", SEARCH_FOODS);
 
         return matcher;
@@ -124,16 +126,88 @@ public class FitFoodProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        return null;
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        Uri returnUri;
+
+        switch (match) {
+            case FOODS: {
+                normalizeDate(values);
+                long _id = db.insert(FoodEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = FoodEntry.buildFoodUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        db.close();
+        return returnUri;
+
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int deletedRows;
+
+        if (selection == null) selection = "1";
+
+        switch (match) {
+            case FOODS: {
+                deletedRows = db.delete(FoodEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        if (deletedRows != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        db.close();
+        return deletedRows;
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int updatedRows;
+
+        if (selection == null) selection = "1";
+        switch (match) {
+            case FOODS: {
+                updatedRows = db.update(FoodEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        if (updatedRows != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        db.close();
+        return updatedRows;
     }
+
+    /**
+     * normalize the date value
+     * @param values data
+     */
+    private void normalizeDate(ContentValues values) {
+        if (values.containsKey(FoodEntry.COLUMN_CREATED)) {
+            long dateValue = values.getAsLong(FoodEntry.COLUMN_CREATED);
+            values.put(FoodEntry.COLUMN_CREATED, FitFoodContract.normalizeDate(dateValue));
+
+        } else if (values.containsKey(FoodEntry.COLUMN_UPDATED)) {
+            long dateValue = values.getAsLong(FoodEntry.COLUMN_UPDATED);
+            values.put(FoodEntry.COLUMN_UPDATED, FitFoodContract.normalizeDate(dateValue));
+        }
+
+    }
+
 }

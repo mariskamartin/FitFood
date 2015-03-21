@@ -35,6 +35,16 @@ public class FitFoodContract {
         public static Uri buildLocationUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
+
+        public static String getFoodIdFromUri(Uri uri) {
+            // food/*
+            return uri.getPathSegments().get(1);
+        }
+
+        public static String getFoodSearchFromUri(Uri uri) {
+            // food/search/*
+            return uri.getPathSegments().get(2);
+        }
     }
 
 

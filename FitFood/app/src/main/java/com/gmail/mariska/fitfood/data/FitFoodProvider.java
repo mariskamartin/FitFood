@@ -181,6 +181,7 @@ public class FitFoodProvider extends ContentProvider {
         if (selection == null) selection = "1";
         switch (match) {
             case FOODS: {
+                normalizeDate(values);
                 updatedRows = db.update(FoodEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             }

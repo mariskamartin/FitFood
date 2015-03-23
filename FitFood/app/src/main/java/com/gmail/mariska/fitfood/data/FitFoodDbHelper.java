@@ -11,7 +11,7 @@ import com.gmail.mariska.fitfood.data.FitFoodContract.FoodEntry;
 public class FitFoodDbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     static final String DATABASE_NAME = "fitfood.db";
 
@@ -25,7 +25,7 @@ public class FitFoodDbHelper extends SQLiteOpenHelper {
                 FoodEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 FoodEntry.COLUMN_NAME+ " TEXT NOT NULL, " +
                 FoodEntry.COLUMN_TEXT + " TEXT NOT NULL, " +
-                FoodEntry.COLUMN_AUTHOR + " TEXT UNIQUE NOT NULL, " +
+                FoodEntry.COLUMN_AUTHOR + " TEXT NOT NULL, " +
                 FoodEntry.COLUMN_CREATED + " INTEGER NOT NULL, " +
                 FoodEntry.COLUMN_UPDATED + " INTEGER NOT NULL, " +
                 FoodEntry.COLUMN_RATING + " INTEGER, " +

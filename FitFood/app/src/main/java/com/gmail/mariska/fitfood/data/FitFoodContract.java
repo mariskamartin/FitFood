@@ -79,6 +79,14 @@ public class FitFoodContract {
         public static Uri buildFoodSearch(String searchTxt) {
             return CONTENT_URI.buildUpon().appendPath("search").appendPath(searchTxt).build();
         }
+
+        /**
+         * Return all record of food
+         * @return
+         */
+        public static Uri buildFoodAllUri() {
+            return CONTENT_URI;
+        }
     }
 
 }

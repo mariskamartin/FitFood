@@ -1,9 +1,12 @@
 package com.gmail.mariska.fitfood;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,10 +14,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 
+import com.gmail.mariska.fitfood.data.FitFoodContract;
+import com.gmail.mariska.fitfood.data.FitFoodDbHelper;
+
+import java.util.Date;
+
 
 public class MainActivity extends ActionBarActivity {
 
     private static final String FOOD_LIST_FRAGMENT_TAG = "FOOD_LIST_FRAGMENT_TAG";
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,12 +51,43 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id){
+            case R.id.action_settings:
+                return true;
+            case R.id.action_refresh:
+                onRefreshAction();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void onRefreshAction() {
+        FitFoodDbHelper dbHelper = new FitFoodDbHelper(this);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        for (int i = 0; i < 10; i++) {
+            ContentValues testValues = createSaladFoodValues(i);
+            long rowId = db.insert(FitFoodContract.FoodEntry.TABLE_NAME, null, testValues);
+            Log.d(LOG_TAG, "iserted rodID = " + rowId);
+        }
+        db.close();
+
+        FoodListFragment fragment = (FoodListFragment) getSupportFragmentManager().findFragmentByTag(FOOD_LIST_FRAGMENT_TAG);
+        fragment.restartFoodLoader();
+    }
+    static ContentValues createSaladFoodValues(int i) {
+        // Create a new map of values, where column names are the keys
+        long actTime = (long) (new Date().getTime() + (Math.random() * 1000));
+        ContentValues foodValues = new ContentValues();
+        foodValues.put(FitFoodContract.FoodEntry.COLUMN_AUTHOR, "Martin M.");
+        foodValues.put(FitFoodContract.FoodEntry.COLUMN_CREATED, actTime);
+        foodValues.put(FitFoodContract.FoodEntry.COLUMN_UPDATED, actTime);
+        foodValues.put(FitFoodContract.FoodEntry.COLUMN_NAME, "Greek Salad " + i + ".");
+        foodValues.put(FitFoodContract.FoodEntry.COLUMN_TEXT, "How to make salads. " + i);
+        foodValues.put(FitFoodContract.FoodEntry.COLUMN_RATING, Math.min(Math.random() * 10, 10));
+        foodValues.put(FitFoodContract.FoodEntry.COLUMN_IMG, (byte[]) null);
+        return foodValues;
     }
 
 

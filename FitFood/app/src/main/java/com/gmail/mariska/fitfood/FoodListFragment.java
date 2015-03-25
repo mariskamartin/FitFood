@@ -74,21 +74,20 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
         mFoodListAdapter = new FoodListAdapter(getActivity(), null, 0);
         mListView = (ListView) rootView.findViewById(R.id.listview_forecast);
         mListView.setAdapter(mFoodListAdapter);
-//        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//            @Override
-//            public void onItemClick(AdapterView adapterView, View view, int position, long l) {
-//                // CursorAdapter returns a cursor at the correct position for getItem(), or null
-//                // if it cannot seek to that position.
-//                Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-//                if (cursor != null) {
-//                    String locationSetting = Utility.getPreferredLocation(getActivity());
-//                    Uri detailUri = FoodEntry.buildWeatherLocationWithDate(locationSetting, cursor.getLong(COL_WEATHER_DATE));
-//                    ((Callback)getActivity()).onItemSelected(detailUri);
-//                }
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView adapterView, View view, int position, long l) {
+                // CursorAdapter returns a cursor at the correct position for getItem(), or null
+                // if it cannot seek to that position.
+                Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+                if (cursor != null) {
+                    Uri detailUri = FoodEntry.buildConcreteFood(String.valueOf(cursor.getInt(COL_FOOD_ID)));
+                    ((Callback) getActivity()).onListItemSelected(detailUri);
+                }
 //                mPosition = position;
-//            }
-//        });
+            }
+        });
 
 //        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
 //            mPosition = savedInstanceState.getInt(SELECTED_KEY);
@@ -127,5 +126,9 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mFoodListAdapter.swapCursor(null);
+    }
+
+    public interface Callback {
+        void onListItemSelected(Uri foodDetailUri);
     }
 }

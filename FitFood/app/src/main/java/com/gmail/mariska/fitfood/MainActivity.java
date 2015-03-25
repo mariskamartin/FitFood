@@ -2,6 +2,7 @@ package com.gmail.mariska.fitfood;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.Toast;
 
 import com.gmail.mariska.fitfood.data.FitFoodContract;
 import com.gmail.mariska.fitfood.data.FitFoodDbHelper;
@@ -20,7 +22,7 @@ import com.gmail.mariska.fitfood.data.FitFoodDbHelper;
 import java.util.Date;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements FoodListFragment.Callback {
 
     private static final String FOOD_LIST_FRAGMENT_TAG = "FOOD_LIST_FRAGMENT_TAG";
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -91,4 +93,12 @@ public class MainActivity extends ActionBarActivity {
     }
 
 
+    /**
+     * For calling activity when some detail is selected by listView
+     * @param foodDetailUri detail uri
+     */
+    @Override
+    public void onListItemSelected(Uri foodDetailUri) {
+        Log.d(LOG_TAG, "detail selected. URI = " + foodDetailUri.toString());
+    }
 }

@@ -5,8 +5,8 @@
     <color name="grey">#cccccc</color>
     <color name="grey_700">#646464</color>
     <color name="black">#000000</color>
-    <color name="fitfood_light_green">#ff64c2f4</color>
-    <color name="fitfood_green">#ff1ca8f4</color>
-    <color name="fitfood_dark_green">#0288D1</color>
+    <color name="fitfood_light_green">#ff80ba02</color>
+    <color name="fitfood_green">#ff387A36</color>
+    <color name="fitfood_dark_green">#235021</color>
 
 </resources>

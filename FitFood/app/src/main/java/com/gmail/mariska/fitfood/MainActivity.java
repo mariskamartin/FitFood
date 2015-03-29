@@ -75,6 +75,7 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
         FoodListFragment fragment = (FoodListFragment) getSupportFragmentManager().findFragmentByTag(FOOD_LIST_FRAGMENT_TAG);
         fragment.restartFoodLoader();
     }
+
     static ContentValues createSaladFoodValues(int i) {
         // Create a new map of values, where column names are the keys
         long actTime = (long) (new Date().getTime() + (Math.random() * 1000));
@@ -88,7 +89,6 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
         foodValues.put(FitFoodContract.FoodEntry.COLUMN_IMG, (byte[]) null);
         return foodValues;
     }
-
 
     /**
      * For calling activity when some detail is selected by listView

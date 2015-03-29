@@ -65,7 +65,7 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
         for (int i = 0; i < 10; i++) {
             ContentValues testValues = createSaladFoodValues(i);
             long rowId = db.insert(FitFoodContract.FoodEntry.TABLE_NAME, null, testValues);
-            Log.d(LOG_TAG, "iserted rodID = " + rowId);
+            Log.d(LOG_TAG, "inserted rodID = " + rowId);
         }
         db.close();
 

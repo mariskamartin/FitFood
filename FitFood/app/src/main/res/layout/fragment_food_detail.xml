@@ -5,46 +5,69 @@
 
     <LinearLayout
         android:gravity="center_vertical"
-        android:layout_gravity="left"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/detail_icon"
+            android:id="@+id/detail_img_icon"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:src="@drawable/greeksalad"
             android:scaleType="centerCrop" />
 
-        <TextView
-            android:fontFamily="sans-serif-condensed"
-            android:id="@+id/detail_day_textview"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:textColor="@color/black"
-            android:textSize="24sp"
-            android:text="GREEK SALAD"
-            android:layout_marginTop="16dp" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:padding="16dp">
 
-        <TextView
-            android:fontFamily="sans-serif-condensed"
-            android:id="@+id/detail_date_textview"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:textColor="@color/grey_700"
-            android:textSize="16sp"
-            android:text="Martin M." />
+            <TextView
+                android:fontFamily="sans-serif-condensed"
+                android:id="@+id/detail_food_name_textview"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:textColor="@color/black"
+                android:textSize="24sp"
+                android:text="GREEK SALAD" />
 
-        <TextView
-            android:id="@+id/detail_forecast_textview"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:textColor="@color/grey_700"
-            android:text="Food: Greek Salad 8. Author:Martin M. (rating 1/10) How to make salads. 8 #FitFoodApp"
-            android:layout_weight="1" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <TextView
+                    android:fontFamily="sans-serif-condensed"
+                    android:id="@+id/detail_author_textview"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:textColor="@color/grey_700"
+                    android:textSize="16sp"
+                    android:text="Martin M."
+                    android:layout_weight="5" />
+
+                <TextView
+                    android:fontFamily="sans-serif-condensed"
+                    android:id="@+id/detail_rating_textview"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:textColor="@color/grey_700"
+                    android:textSize="16sp"
+                    android:text="5/10"
+                    android:layout_weight="1"
+                    android:gravity="end" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/detail_food_text_textview"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/grey_700"
+                android:text="Food: Greek Salad 8. Author:Martin M. (rating 1/10) How to make salads. 8 #FitFoodApp and ahojda akorderom odsmf ofk "
+                android:layout_weight="1"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
 
 
     </LinearLayout>

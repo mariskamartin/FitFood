@@ -110,7 +110,7 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
     //methods for cursor loader
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String sortOrder = FoodEntry.COLUMN_CREATED + " ASC";
+        String sortOrder = FoodEntry.COLUMN_CREATED + " DESC";
         Uri weatherForLocationUri = FoodEntry.buildFoodAllUri();
         return new CursorLoader(getActivity(), weatherForLocationUri, FOOD_COLUMNS, null, null, sortOrder);
     }

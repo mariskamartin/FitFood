@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat;
  * Created by mar on 23. 3. 2015.
  */
 public final class Utility {
-    public static final String DATE_FORMAT = "dd.MM.yyyy";
+    public static final String DATE_FORMAT = "dd.MM.yy";
 
     /**
      * Helper method to convert the database representation of the date into something to display

@@ -46,7 +46,7 @@ public class FoodListAdapter extends CursorAdapter {
 
         viewHolder.foodNameView.setText(cursor.getString(FoodListFragment.COL_FOOD_NAME));
         viewHolder.authorView.setText(cursor.getString(FoodListFragment.COL_FOOD_AUTHOR));
-        viewHolder.ratingView.setText("Rating " + cursor.getInt(FoodListFragment.COL_FOOD_RATING) + "/10");
+        viewHolder.ratingView.setText(String.valueOf(cursor.getInt(FoodListFragment.COL_FOOD_RATING)));
         viewHolder.dateView.setText(dateFormat.format(cursor.getLong(FoodListFragment.COL_FOOD_UPDATED)));
     }
 

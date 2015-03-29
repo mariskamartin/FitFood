@@ -57,19 +57,15 @@ public class FoodDetailFragment extends Fragment implements LoaderManager.Loader
     private final String LOG_TAG = FoodDetailFragment.class.getSimpleName();
     private final static String FOOD_SHARE_HASHTAG = "#FitFoodApp";
 
-    private String mFoodTxt;
     private ShareActionProvider mShareActionProvider;
-    private ImageView mIconView;
-    private TextView mDateView;
-    private TextView mFriendlyDateView;
-    private TextView mForecastView;
-    private TextView mHighView;
-    private TextView mLowView;
-    private TextView mWindView;
-    private TextView mHumidityView;
-    private TextView mPressureView;
-    private String mLocation;
+    private String mFoodTxt;
     private Uri mUri;
+
+    private ImageView mImgView;
+    private TextView mAuthorView;
+    private TextView mFoodNameView;
+    private TextView mFoodTextView;
+    private TextView mRatingView;
 
     public FoodDetailFragment() {
         setHasOptionsMenu(true); //for onCreateOptionMenu
@@ -77,8 +73,9 @@ public class FoodDetailFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.food_detail_fragment, menu);
+        inflater.inflate(R.menu.food_detail_menu_fragment, menu);
 
+        //adds Share provider
         MenuItem menuItem = menu.findItem(R.id.action_share);
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
         if (mShareActionProvider != null) {
@@ -96,10 +93,11 @@ public class FoodDetailFragment extends Fragment implements LoaderManager.Loader
            mUri = arguments.getParcelable(FoodDetailFragment.DETAIL_URI);
         }
         View view = inflater.inflate(R.layout.fragment_food_detail, container, false);
-        mIconView = (ImageView) view.findViewById(R.id.detail_icon);
-        mDateView = (TextView) view.findViewById(R.id.detail_date_textview);
-        mFriendlyDateView = (TextView) view.findViewById(R.id.detail_day_textview);
-        mForecastView = (TextView) view.findViewById(R.id.detail_forecast_textview);
+        mImgView = (ImageView) view.findViewById(R.id.detail_img_icon);
+        mAuthorView = (TextView) view.findViewById(R.id.detail_author_textview);
+        mFoodNameView = (TextView) view.findViewById(R.id.detail_food_name_textview);
+        mFoodTextView = (TextView) view.findViewById(R.id.detail_food_text_textview);
+        mRatingView = (TextView) view.findViewById(R.id.detail_rating_textview);
         return view;
     }
 
@@ -125,18 +123,18 @@ public class FoodDetailFragment extends Fragment implements LoaderManager.Loader
         }
         Log.v(LOG_TAG, "onLoadFinished - loading");
 
-        //TODO ... detail content
+        String foodName = cursor.getString(COL_FOOD_NAME);
+        String foodText = cursor.getString(COL_FOOD_TEXT);
+        String author = cursor.getString(COL_FOOD_AUTHOR);
+        String rating = cursor.getInt(COL_FOOD_RATING) + "/10";
 
-        mIconView.setImageResource(R.drawable.greeksalad);
-
-        String foodName = cursor.getString(FoodListFragment.COL_FOOD_NAME);
-        String foodText = cursor.getString(FoodListFragment.COL_FOOD_TEXT);
-        String author = cursor.getString(FoodListFragment.COL_FOOD_AUTHOR);
-        String rating = cursor.getInt(FoodListFragment.COL_FOOD_RATING) + "/10";
         mFoodTxt = String.format("Food: %s\nAuthor:%s (rating %s)\n%s\n", foodName, author, rating, foodText);
 
-        mForecastView.setText(mFoodTxt);
-
+        mImgView.setImageResource(R.drawable.greeksalad);
+        mFoodNameView.setText(foodName);
+        mAuthorView.setText(author);
+        mRatingView.setText(rating);
+        mFoodTextView.setText(foodText);
 
         // If onCreateOptionsMenu has already happened, we need to update the share intent now.
         if (mShareActionProvider != null) {

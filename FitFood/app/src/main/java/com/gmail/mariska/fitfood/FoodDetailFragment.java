@@ -26,18 +26,12 @@ import com.gmail.mariska.fitfood.data.FitFoodContract.FoodEntry;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class FoodDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int FOOD_DETAIL_LOADER_ID = 1;
     /**
      * Definition of columns for loading data into detail
      */
     private static final String[] FOOD_DETAIL_COLUMNS = {
-            // In this case the id needs to be fully qualified with a table name, since
-            // the content provider joins the location & weather tables in the background
-            // (both have an _id column)
-            // On the one hand, that's annoying.  On the other, you can search the weather table
-            // using the location set by the user, which is only in the Location table.
-            // So the convenience is worth it.
             FoodEntry.TABLE_NAME + "." + FoodEntry._ID,
             FoodEntry.COLUMN_NAME,
             FoodEntry.COLUMN_TEXT,
@@ -60,7 +54,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     public static final String DETAIL_URI = "URI";
 
-    private final String LOG_TAG = DetailFragment.class.getSimpleName();
+    private final String LOG_TAG = FoodDetailFragment.class.getSimpleName();
     private final static String FOOD_SHARE_HASHTAG = "#FitFoodApp";
 
     private String mFoodTxt;
@@ -77,7 +71,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private String mLocation;
     private Uri mUri;
 
-    public DetailFragment() {
+    public FoodDetailFragment() {
         setHasOptionsMenu(true); //for onCreateOptionMenu
     }
 
@@ -99,7 +93,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                              Bundle savedInstanceState) {
         Bundle arguments = getArguments();
         if (arguments != null) {
-           mUri = arguments.getParcelable(DetailFragment.DETAIL_URI);
+           mUri = arguments.getParcelable(FoodDetailFragment.DETAIL_URI);
         }
         View view = inflater.inflate(R.layout.fragment_food_detail, container, false);
         mIconView = (ImageView) view.findViewById(R.id.detail_icon);
@@ -135,29 +129,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             return;
         }
         Log.v(LOG_TAG, "onLoadFinished - loading");
-//        mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(data.getInt(COL_WEATHER_CONDITIONID)));
 
-//        long dateInMillis = data.getLong(COL_WEATHER_DATE);
-//        String dateString = Utility.formatDate(dateInMillis);
-//        String friendlyDateString = Utility.getFriendlyDayString(getActivity(), dateInMillis);
-//        mFriendlyDateView.setText(friendlyDateString);
-//        mDateView.setText(dateString);
-//
-//        String weatherDescription = data.getString(COL_WEATHER_DESC);
-//        mForecastView.setText(weatherDescription);
-//        mIconView.setContentDescription(weatherDescription);
-//
-//        boolean isMetric = Utility.isMetric(getActivity());
-//        String high = Utility.formatTemperature(getActivity(), data.getDouble(COL_WEATHER_MAX_TEMP));
-//        String low = Utility.formatTemperature(getActivity(), data.getDouble(COL_WEATHER_MIN_TEMP));
-//        mHighView.setText(high);
-//        mLowView.setText(low);
-//
-//        mHumidityView.setText("Vlhkost vzduchu: " + data.getFloat(COL_WEATHER_HUMID) + " %");
-//
-//        String formattedWind = Utility.getFormattedWind(getActivity(), data.getFloat(COL_WEATHER_WINDSPEES), data.getFloat(COL_WEATHER_DEGREES));
-//        mWindView.setText(formattedWind);
-//        mPressureView.setText("Tlak: " + data.getFloat(COL_WEATHER_PRESSURE) + " hPa");
+        //TODO ... detail content
+
         String foodName = cursor.getString(FoodListFragment.COL_FOOD_NAME);
         String foodText = cursor.getString(FoodListFragment.COL_FOOD_TEXT);
         String author = cursor.getString(FoodListFragment.COL_FOOD_AUTHOR);
@@ -176,12 +150,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onResume() {
         super.onResume();
-        //ONLY IN CASE WHEN SETTINGS CHANGE
-//        Intent intent = getActivity().getIntent();
-//        if (intent != null && intent.hasExtra(DetailActivity.DATE_KEY) &&
-//                mLocation != null && !mLocation.equals(Utility.getPreferredLocation(getActivity()))) {
-//            getLoaderManager().restartLoader(FOOD_DETAIL_LOADER_ID, null, this);
-//        }
     }
 
     @Override
@@ -189,7 +157,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     private Intent createShareForecastIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET); //for 21 API is newer FALG
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         //FIXME - remake it to Rich Content
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, mFoodTxt + FOOD_SHARE_HASHTAG);

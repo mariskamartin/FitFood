@@ -68,6 +68,7 @@ public class FitFoodProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Cursor retCursor;
+        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
         switch (sUriMatcher.match(uri)) {
             // "food/*"
             case CONCRETE_FOOD:
@@ -76,7 +77,7 @@ public class FitFoodProvider extends ContentProvider {
                 selectionArgs = new String[]{foodId};
                 selection = sConcreteFoodSelection;
 
-                retCursor = mOpenHelper.getReadableDatabase().query(
+                retCursor = db.query(
                         FoodEntry.TABLE_NAME,
                         projection,
                         selection,
@@ -89,7 +90,7 @@ public class FitFoodProvider extends ContentProvider {
             }
             // "food"
             case FOODS: {
-                retCursor = mOpenHelper.getReadableDatabase().query(
+                retCursor = db.query(
                         FoodEntry.TABLE_NAME,
                         projection,
                         selection,
@@ -106,7 +107,7 @@ public class FitFoodProvider extends ContentProvider {
                 selectionArgs = new String[]{"%"+search+"%"}; //finds all contains search string
                 selection = sFoodSearchSelection;
 
-                retCursor = mOpenHelper.getReadableDatabase().query(
+                retCursor = db.query(
                         FoodEntry.TABLE_NAME,
                         projection,
                         selection,
@@ -120,6 +121,7 @@ public class FitFoodProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
+//        db.close();
         retCursor.setNotificationUri(getContext().getContentResolver(), uri);
         return retCursor;
     }

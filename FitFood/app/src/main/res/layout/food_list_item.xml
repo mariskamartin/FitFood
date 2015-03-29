@@ -12,7 +12,7 @@
     <ImageView
         android:id="@+id/list_item_img"
         android:layout_gravity="center"
-        android:layout_width="80dp"
+        android:layout_width="@dimen/food_list_item_img_width"
         android:layout_height="match_parent"
         android:src="@drawable/greeksalad"
         android:scaleType="centerCrop" />

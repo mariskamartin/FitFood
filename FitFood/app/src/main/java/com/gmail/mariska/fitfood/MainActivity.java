@@ -2,6 +2,7 @@ package com.gmail.mariska.fitfood;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
@@ -21,18 +22,34 @@ import java.util.Date;
  */
 public class MainActivity extends ActionBarActivity implements FoodListFragment.Callback {
 
-    private static final String FOOD_LIST_FRAGMENT_TAG = "FOOD_LIST_FRAGMENT_TAG";
+    private static final String FOOD_DETAIL_FRAGMENT_TAG = "FOOD_DETAIL_FRAGMENT_TAG";
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private boolean mTwoPane = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new FoodListFragment(), FOOD_LIST_FRAGMENT_TAG)
-                    .commit();
+
+        if (findViewById(R.id.food_detail_activity_container) != null) {
+            mTwoPane = true;
+
+            //force only landscape orientation
+            this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.food_detail_activity_container, new FoodDetailFragment(), FOOD_DETAIL_FRAGMENT_TAG)
+                        .commit();
+            }
+        } else {
+            mTwoPane = false;
         }
+
+        Log.v(LOG_TAG, "twoPane MODE = " + mTwoPane);
     }
 
 
@@ -72,7 +89,7 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
         }
         db.close();
 
-        FoodListFragment fragment = (FoodListFragment) getSupportFragmentManager().findFragmentByTag(FOOD_LIST_FRAGMENT_TAG);
+        FoodListFragment fragment = (FoodListFragment) getSupportFragmentManager().findFragmentById(R.id.main_list_container);
         fragment.restartFoodLoader();
     }
 
@@ -96,8 +113,22 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
      */
     @Override
     public void onListItemSelected(Uri foodDetailUri) {
-        Log.d(LOG_TAG, "detail selected. URI = " + foodDetailUri.toString());
-        Intent intent = new Intent(this, FoodDetailActivity.class).setData(foodDetailUri);
-        startActivity(intent);
+        if (mTwoPane) {
+            Bundle args = new Bundle();
+            args.putParcelable(FoodDetailFragment.DETAIL_URI, foodDetailUri);
+
+            FoodDetailFragment fragment = new FoodDetailFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.food_detail_activity_container, fragment, FOOD_DETAIL_FRAGMENT_TAG)
+                    .commit();
+
+
+        } else {
+            Log.d(LOG_TAG, "detail selected. URI = " + foodDetailUri.toString());
+            Intent intent = new Intent(this, FoodDetailActivity.class).setData(foodDetailUri);
+            startActivity(intent);
+        }
     }
 }

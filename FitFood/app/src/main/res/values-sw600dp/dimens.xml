@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="food_list_item_img_width">100dp</dimen>
+    <dimen name="food_detail_img_height">350dp</dimen>
+</resources>

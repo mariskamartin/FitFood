@@ -16,6 +16,9 @@ import com.gmail.mariska.fitfood.data.FitFoodDbHelper;
 import java.util.Date;
 
 
+/**
+ * Main FIt Food activity.
+ */
 public class MainActivity extends ActionBarActivity implements FoodListFragment.Callback {
 
     private static final String FOOD_LIST_FRAGMENT_TAG = "FOOD_LIST_FRAGMENT_TAG";

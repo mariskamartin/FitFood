@@ -100,5 +100,6 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
     @Override
     public void onListItemSelected(Uri foodDetailUri) {
         Log.d(LOG_TAG, "detail selected. URI = " + foodDetailUri.toString());
+
     }
 }

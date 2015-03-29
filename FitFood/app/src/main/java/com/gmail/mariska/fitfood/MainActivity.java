@@ -1,6 +1,7 @@
 package com.gmail.mariska.fitfood;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
@@ -100,6 +101,7 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
     @Override
     public void onListItemSelected(Uri foodDetailUri) {
         Log.d(LOG_TAG, "detail selected. URI = " + foodDetailUri.toString());
-
+        Intent intent = new Intent(this, DetailActivity.class).setData(foodDetailUri);
+        startActivity(intent);
     }
 }

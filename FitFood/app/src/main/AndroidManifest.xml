@@ -16,7 +16,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".DetailActivity"
+            android:label="@string/title_activity_food_detail"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.gmail.mariska.fitfood.MainActivity" />
+        </activity>
 
         <provider
             android:authorities="@string/content_authority"

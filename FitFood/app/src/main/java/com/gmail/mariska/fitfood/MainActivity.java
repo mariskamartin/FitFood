@@ -124,7 +124,6 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
                     .replace(R.id.food_detail_activity_container, fragment, FOOD_DETAIL_FRAGMENT_TAG)
                     .commit();
 
-
         } else {
             Log.d(LOG_TAG, "detail selected. URI = " + foodDetailUri.toString());
             Intent intent = new Intent(this, FoodDetailActivity.class).setData(foodDetailUri);

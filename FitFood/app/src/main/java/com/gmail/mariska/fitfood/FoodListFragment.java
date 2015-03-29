@@ -94,8 +94,25 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
                 @Override
                 public boolean onQueryTextSubmit(String searchStr) {
                     Log.v(LOG_TAG, "Searching: " + searchStr);
-                    searchFood(searchStr);
+                    listSearchedFood(searchStr.trim()); //because of automatic filling
                     return true; //true - widget stay unfolded
+                }
+            });
+
+            // When using the support library, the setOnActionExpandListener() method is
+            // static and accepts the MenuItem object as an argument
+            MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
+                @Override
+                public boolean onMenuItemActionCollapse(MenuItem item) {
+                    Log.v(LOG_TAG, "Searching collapsed.");
+                    listAllFood();
+                    return true;  // Return true to collapse action view
+                }
+
+                @Override
+                public boolean onMenuItemActionExpand(MenuItem item) {
+                    // Do something when expanded
+                    return true;  // Return true to expand action view
                 }
             });
         }
@@ -133,8 +150,7 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
 //        }
 //        mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
 
-        Cursor foodCursor = getActivity().getContentResolver().query(FitFoodContract.FoodEntry.CONTENT_URI, null, null, null, mDefaultFoodListSortOrder );
-        mFoodListAdapter.swapCursor(foodCursor);
+        listAllFood();
         return rootView;
     }
 
@@ -142,10 +158,18 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
      * Search for foods and shows them in list.
      * @param searchStr
      */
-    public void searchFood(String searchStr) {
+    public void listSearchedFood(String searchStr) {
         Log.v(LOG_TAG, "creates new cursor for: " + searchStr);
         Cursor searchCursor = getActivity().getContentResolver().query(FoodEntry.buildFoodSearch(searchStr), null, null, null, mDefaultFoodListSortOrder );
         mFoodListAdapter.swapCursor(searchCursor);
+    }
+
+    /**
+     * Shows all foods.
+     */
+    public void listAllFood() {
+        Cursor foodCursor = getActivity().getContentResolver().query(FitFoodContract.FoodEntry.CONTENT_URI, null, null, null, mDefaultFoodListSortOrder );
+        mFoodListAdapter.swapCursor(foodCursor);
     }
 
     /**

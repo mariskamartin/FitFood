@@ -100,11 +100,6 @@ public class FoodDetailFragment extends Fragment implements LoaderManager.Loader
         mDateView = (TextView) view.findViewById(R.id.detail_date_textview);
         mFriendlyDateView = (TextView) view.findViewById(R.id.detail_day_textview);
         mForecastView = (TextView) view.findViewById(R.id.detail_forecast_textview);
-        mHighView = (TextView) view.findViewById(R.id.detail_high_textview);
-        mLowView = (TextView) view.findViewById(R.id.detail_low_textview);
-        mHumidityView = (TextView) view.findViewById(R.id.detail_humidity_textview);
-        mWindView = (TextView) view.findViewById(R.id.detail_wind_textview);
-        mPressureView = (TextView) view.findViewById(R.id.detail_pressure_textview);
         return view;
     }
 
@@ -131,6 +126,8 @@ public class FoodDetailFragment extends Fragment implements LoaderManager.Loader
         Log.v(LOG_TAG, "onLoadFinished - loading");
 
         //TODO ... detail content
+
+        mIconView.setImageResource(R.drawable.greeksalad);
 
         String foodName = cursor.getString(FoodListFragment.COL_FOOD_NAME);
         String foodText = cursor.getString(FoodListFragment.COL_FOOD_TEXT);

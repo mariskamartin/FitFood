@@ -34,6 +34,9 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
      * Food Loader ID
      */
     private static final int FOOD_LOADER_ID = 0;
+
+    private int mPosition = ListView.INVALID_POSITION;
+
     /**
      * Definition of columns for loading data
      */
@@ -65,9 +68,12 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
     static final int COL_FOOD_RATING = 6;
     static final int COL_FOOD_IMG = 7;
 
+    private static final String SELECTED_ROW_KEY = "SELECTED_ROW";
+
     private FoodListAdapter mFoodListAdapter;
     private ListView mListView;
     private String mDefaultFoodListSortOrder = FoodEntry.COLUMN_CREATED + " DESC";
+
 
     public FoodListFragment() {
         setHasOptionsMenu(true);
@@ -97,14 +103,13 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
                     Uri detailUri = FoodEntry.buildConcreteFood(String.valueOf(cursor.getInt(COL_FOOD_ID)));
                     ((Callback) getActivity()).onListItemSelected(detailUri);
                 }
-//                mPosition = position;
+                mPosition = position;
             }
         });
 
-//        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
-//            mPosition = savedInstanceState.getInt(SELECTED_KEY);
-//        }
-//        mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_ROW_KEY)) {
+            mPosition = savedInstanceState.getInt(SELECTED_ROW_KEY);
+        }
 
         listAllFood();
         return rootView;
@@ -192,14 +197,23 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mFoodListAdapter.swapCursor(data);
-//        if (mPosition != ListView.INVALID_POSITION) {
-//            mListView.smoothScrollToPosition(mPosition);
-//        }
+        if (mPosition != ListView.INVALID_POSITION) {
+            mListView.smoothScrollToPosition(mPosition);
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mFoodListAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        //when we are going out.. so save position
+        if (mPosition != ListView.INVALID_POSITION) {
+            outState.putInt(SELECTED_ROW_KEY, mPosition);
+        }
+        super.onSaveInstanceState(outState);
     }
 
     public interface Callback {

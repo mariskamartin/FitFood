@@ -1,14 +1,22 @@
 package com.gmail.mariska.fitfood;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -21,6 +29,7 @@ import com.gmail.mariska.fitfood.data.FitFoodContract.FoodEntry;
  * Fragment for Main Activity with list of food
  */
 public class FoodListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+    private static final String LOG_TAG = FoodListFragment.class.getSimpleName();
     /**
      * Food Loader ID
      */
@@ -58,8 +67,38 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
 
     private FoodListAdapter mFoodListAdapter;
     private ListView mListView;
+    private String mDefaultFoodListSortOrder = FoodEntry.COLUMN_CREATED + " DESC";
 
     public FoodListFragment() {
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            // Get the SearchView and set the searchable configuration
+            SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+            // Assumes current activity is the searchable activity
+            MenuItem searchItem = menu.findItem(R.id.action_search);
+            SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+            searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                public boolean onQueryTextChange(String s) {
+                    Log.v(LOG_TAG, "Submitted search: " + s);
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextSubmit(String searchStr) {
+                    Log.v(LOG_TAG, "Searching: " + searchStr);
+                    searchFood(searchStr);
+                    return true; //true - widget stay unfolded
+                }
+            });
+        }
     }
 
     @Override
@@ -94,11 +133,20 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
 //        }
 //        mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
 
-        Cursor foodCursor = getActivity().getContentResolver().query(FitFoodContract.FoodEntry.CONTENT_URI, null, null, null, null );
+        Cursor foodCursor = getActivity().getContentResolver().query(FitFoodContract.FoodEntry.CONTENT_URI, null, null, null, mDefaultFoodListSortOrder );
         mFoodListAdapter.swapCursor(foodCursor);
         return rootView;
     }
 
+    /**
+     * Search for foods and shows them in list.
+     * @param searchStr
+     */
+    public void searchFood(String searchStr) {
+        Log.v(LOG_TAG, "creates new cursor for: " + searchStr);
+        Cursor searchCursor = getActivity().getContentResolver().query(FoodEntry.buildFoodSearch(searchStr), null, null, null, mDefaultFoodListSortOrder );
+        mFoodListAdapter.swapCursor(searchCursor);
+    }
 
     /**
      * Restarts loader. It starts to refresh data.
@@ -110,9 +158,8 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
     //methods for cursor loader
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String sortOrder = FoodEntry.COLUMN_CREATED + " DESC";
         Uri weatherForLocationUri = FoodEntry.buildFoodAllUri();
-        return new CursorLoader(getActivity(), weatherForLocationUri, FOOD_COLUMNS, null, null, sortOrder);
+        return new CursorLoader(getActivity(), weatherForLocationUri, FOOD_COLUMNS, null, null, mDefaultFoodListSortOrder);
     }
 
     @Override

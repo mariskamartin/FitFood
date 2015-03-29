@@ -16,5 +16,7 @@
     <!-- SyncAdapter related -->
     <string name="sync_account_type">fitfood.mariska.gmail.com</string>
     <string name="content_authority">com.gmail.mariska.fitfood</string>
+    <string name="search">Search</string>
+    <string name="search_hint">search food</string>
 
 </resources>

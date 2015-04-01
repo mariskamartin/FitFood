@@ -1,18 +1,17 @@
 package com.gmail.mariska.fitfood.sync;
 
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.text.format.Time;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gmail.mariska.fitfood.Utility;
+import com.gmail.mariska.fitfood.data.FitFoodContract;
+import com.gmail.mariska.fitfood.data.FitFoodDbHelper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,12 +19,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 
 public class FetchFoodTask extends AsyncTask<String, Void, Void> {
 
     private final String LOG_TAG = FetchFoodTask.class.getSimpleName();
     private final Context mContext;
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     public FetchFoodTask(Context context) {
         mContext = context;
@@ -287,6 +288,27 @@ public class FetchFoodTask extends AsyncTask<String, Void, Void> {
             }
             forecastJsonStr = buffer.toString();
             Log.d(LOG_TAG, forecastJsonStr);
+            List<Food> foods = Utility.fromJson(forecastJsonStr, new TypeReference<List<Food>>() {});
+            Log.d(LOG_TAG, foods.get(0).getName());
+            Log.d(LOG_TAG, foods.get(0).getImg().toString());
+            Log.d(LOG_TAG, foods.get(1).getName());
+
+            FitFoodDbHelper dbHelper = new FitFoodDbHelper(mContext);
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            for (Food food : foods) {
+                ContentValues foodValues = new ContentValues();
+                foodValues.put(FitFoodContract.FoodEntry.COLUMN_AUTHOR, food.getAuthor());
+                foodValues.put(FitFoodContract.FoodEntry.COLUMN_CREATED, food.getCreated().getTime());
+                foodValues.put(FitFoodContract.FoodEntry.COLUMN_UPDATED, food.getUpdated().getTime());
+                foodValues.put(FitFoodContract.FoodEntry.COLUMN_NAME, food.getName());
+                foodValues.put(FitFoodContract.FoodEntry.COLUMN_TEXT, food.getText());
+                foodValues.put(FitFoodContract.FoodEntry.COLUMN_RATING, food.getRating());
+                foodValues.put(FitFoodContract.FoodEntry.COLUMN_IMG, food.getImg());
+                long rowId = db.insert(FitFoodContract.FoodEntry.TABLE_NAME, null, foodValues);
+                Log.d(LOG_TAG, "inserted rodID = " + rowId);
+            }
+            db.close();
+
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attemping

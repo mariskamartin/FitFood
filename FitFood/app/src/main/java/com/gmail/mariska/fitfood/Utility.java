@@ -2,7 +2,16 @@ package com.gmail.mariska.fitfood;
 
 import android.content.Context;
 import android.text.format.Time;
+import android.util.Log;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.io.StringReader;
 import java.text.SimpleDateFormat;
 
 /**
@@ -10,7 +19,64 @@ import java.text.SimpleDateFormat;
  * Created by mar on 23. 3. 2015.
  */
 public final class Utility {
+    private static ObjectMapper jacksonMapper = new ObjectMapper();
+    private static final String LOG_TAG = Utility.class.getSimpleName();
+
     public static final String DATE_FORMAT = "dd.MM.yy";
+
+
+    /**
+     * Converts JSON string into new instance of class in param.
+     * In case of error returns null.
+     *
+     * @param json parsed string
+     * @param objectClass instance class
+     * @return instance or null when error
+     */
+    public static <T> T fromJson(String json, Class<T> objectClass) {
+        try {
+            return jacksonMapper.readValue(new StringReader(json), objectClass);
+        } catch (JsonParseException e) {
+            Log.w(LOG_TAG,e.getMessage());
+        } catch (JsonMappingException e) {
+            Log.w(LOG_TAG,e.getMessage());
+        } catch (IOException e) {
+            Log.w(LOG_TAG,e.getMessage());
+        }
+        return null;
+    }
+
+    public static <T> T fromJson(String json, TypeReference<T> type) {
+        try {
+            return jacksonMapper.readValue(new StringReader(json), type);
+        } catch (JsonParseException e) {
+            Log.w(LOG_TAG,e.getMessage());
+        } catch (JsonMappingException e) {
+            Log.w(LOG_TAG,e.getMessage());
+        } catch (IOException e) {
+            Log.w(LOG_TAG,e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Converts object to JSON string.
+     *
+     * @param object instance for convert
+     * @return json string or null in case of error
+     */
+    public static <T> String toJson(T object) {
+        try {
+            return jacksonMapper.writeValueAsString(object);
+        } catch (JsonGenerationException e) {
+            Log.d(LOG_TAG, e.getMessage());
+        } catch (JsonMappingException e) {
+            Log.w(LOG_TAG, e.getMessage());
+        } catch (IOException e) {
+            Log.w(LOG_TAG, e.getMessage());
+        }
+        return null;
+    }
 
     /**
      * Helper method to convert the database representation of the date into something to display

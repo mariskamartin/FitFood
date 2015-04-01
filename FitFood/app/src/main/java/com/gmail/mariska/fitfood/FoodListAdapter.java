@@ -2,6 +2,8 @@ package com.gmail.mariska.fitfood;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,8 +43,12 @@ public class FoodListAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
-//        viewHolder.imgView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
+        byte[] blob = cursor.getBlob(FoodListFragment.COL_FOOD_IMG);
+        if(blob != null) {
+            Bitmap bmp= BitmapFactory.decodeByteArray(blob, 0, blob.length);
+            viewHolder.imgView.setImageBitmap(bmp);
 //        viewHolder.imgView.setContentDescription(description);
+        }
 
         viewHolder.foodNameView.setText(cursor.getString(FoodListFragment.COL_FOOD_NAME));
         viewHolder.authorView.setText(cursor.getString(FoodListFragment.COL_FOOD_AUTHOR));

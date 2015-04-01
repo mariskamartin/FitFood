@@ -2,6 +2,7 @@ package com.gmail.mariska.fitfood;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -127,10 +128,15 @@ public class FoodDetailFragment extends Fragment implements LoaderManager.Loader
         String foodText = cursor.getString(COL_FOOD_TEXT);
         String author = cursor.getString(COL_FOOD_AUTHOR);
         String rating = cursor.getInt(COL_FOOD_RATING) + "/10";
+        byte[] blob = cursor.getBlob(COL_FOOD_IMG);
 
         mFoodTxt = String.format("Food: %s\nAuthor:%s (rating %s)\n%s\n", foodName, author, rating, foodText);
 
-        mImgView.setImageResource(R.drawable.greeksalad);
+        if(blob != null) {
+            mImgView.setImageBitmap(BitmapFactory.decodeByteArray(blob, 0, blob.length));
+        } else {
+            mImgView.setImageResource(R.drawable.greeksalad);
+        }
         mFoodNameView.setText(foodName);
         mAuthorView.setText(author);
         mRatingView.setText(rating);

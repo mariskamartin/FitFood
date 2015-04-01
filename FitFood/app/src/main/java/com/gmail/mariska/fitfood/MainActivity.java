@@ -13,6 +13,7 @@ import android.view.MenuItem;
 
 import com.gmail.mariska.fitfood.data.FitFoodContract;
 import com.gmail.mariska.fitfood.data.FitFoodDbHelper;
+import com.gmail.mariska.fitfood.sync.FetchFoodTask;
 
 import java.util.Date;
 
@@ -79,18 +80,26 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
     }
 
     private void onRefreshAction() {
-        FitFoodDbHelper dbHelper = new FitFoodDbHelper(this);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        updateFoodData();
 
-        for (int i = 0; i < 10; i++) {
-            ContentValues testValues = createSaladFoodValues(i);
-            long rowId = db.insert(FitFoodContract.FoodEntry.TABLE_NAME, null, testValues);
-            Log.d(LOG_TAG, "inserted rodID = " + rowId);
-        }
-        db.close();
+//        FitFoodDbHelper dbHelper = new FitFoodDbHelper(this);
+//        SQLiteDatabase db = dbHelper.getWritableDatabase();
+//
+//        for (int i = 0; i < 10; i++) {
+//            ContentValues testValues = createSaladFoodValues(i);
+//            long rowId = db.insert(FitFoodContract.FoodEntry.TABLE_NAME, null, testValues);
+//            Log.d(LOG_TAG, "inserted rodID = " + rowId);
+//        }
+//        db.close();
 
         FoodListFragment fragment = (FoodListFragment) getSupportFragmentManager().findFragmentById(R.id.main_list_container);
         fragment.restartFoodLoader();
+    }
+
+    private void updateFoodData() {
+        Log.v(LOG_TAG, "calling updateFoodData...");
+        FetchFoodTask task = new FetchFoodTask(this);
+        task.execute();
     }
 
     static ContentValues createSaladFoodValues(int i) {

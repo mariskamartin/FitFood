@@ -47,10 +47,13 @@ public class FoodListAdapter extends CursorAdapter {
         if(blob != null) {
             Bitmap bmp= BitmapFactory.decodeByteArray(blob, 0, blob.length);
             viewHolder.imgView.setImageBitmap(bmp);
-//        viewHolder.imgView.setContentDescription(description);
+        } else {
+            viewHolder.imgView.setImageResource(R.drawable.noimage);
         }
 
-        viewHolder.foodNameView.setText(cursor.getString(FoodListFragment.COL_FOOD_NAME));
+        String foodName = cursor.getString(FoodListFragment.COL_FOOD_NAME);
+        viewHolder.imgView.setContentDescription(foodName);
+        viewHolder.foodNameView.setText(foodName);
         viewHolder.authorView.setText(cursor.getString(FoodListFragment.COL_FOOD_AUTHOR));
         viewHolder.ratingView.setText(String.valueOf(cursor.getInt(FoodListFragment.COL_FOOD_RATING)));
         viewHolder.dateView.setText(dateFormat.format(cursor.getLong(FoodListFragment.COL_FOOD_UPDATED)));

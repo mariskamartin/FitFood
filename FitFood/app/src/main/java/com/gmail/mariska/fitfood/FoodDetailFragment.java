@@ -135,7 +135,7 @@ public class FoodDetailFragment extends Fragment implements LoaderManager.Loader
         if(blob != null) {
             mImgView.setImageBitmap(BitmapFactory.decodeByteArray(blob, 0, blob.length));
         } else {
-            mImgView.setImageResource(R.drawable.greeksalad);
+            mImgView.setImageResource(R.drawable.noimage);
         }
         mFoodNameView.setText(foodName);
         mAuthorView.setText(author);

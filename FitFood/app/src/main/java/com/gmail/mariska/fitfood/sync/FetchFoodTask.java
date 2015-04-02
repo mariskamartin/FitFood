@@ -49,7 +49,7 @@ public class FetchFoodTask extends AsyncTask<String, Void, Void> {
         String foodsJsonStr = null;
 
         try {
-            final String FITFOOD_BASE_URL = "http://fitfood-mariskamartin.rhcloud.com/api/v1/foods";
+            final String FITFOOD_BASE_URL = "http://fitfood-mariskamartin.rhcloud.com/api/v1/foods/query?";
             Uri builtUri = Uri.parse(FITFOOD_BASE_URL).buildUpon().appendQueryParameter("since", String.valueOf(lastUpdate)).build();
 
             URL url = new URL(builtUri.toString());
@@ -76,8 +76,8 @@ public class FetchFoodTask extends AsyncTask<String, Void, Void> {
                 return null;
             }
             foodsJsonStr = buffer.toString();
-            Log.d(LOG_TAG, foodsJsonStr);
             List<Food> newFoods = Utility.fromJson(foodsJsonStr, new TypeReference<List<Food>>() {});
+            Log.d(LOG_TAG, "count of new foods = " + newFoods.size());
 
             FitFoodDbHelper dbHelper = new FitFoodDbHelper(mContext);
             SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -92,8 +92,9 @@ public class FetchFoodTask extends AsyncTask<String, Void, Void> {
                     foodValues.put(FitFoodContract.FoodEntry.COLUMN_TEXT, food.getText());
                     foodValues.put(FitFoodContract.FoodEntry.COLUMN_RATING, food.getRating());
                     foodValues.put(FitFoodContract.FoodEntry.COLUMN_IMG, food.getImg());
-                    long rowId = db.insertOrThrow(FitFoodContract.FoodEntry.TABLE_NAME, null, foodValues);
+                    long rowId = db.replaceOrThrow(FitFoodContract.FoodEntry.TABLE_NAME, null, foodValues);
                     Log.d(LOG_TAG, "inserted rodID = " + rowId);
+                    Log.d(LOG_TAG, "added or updated " + food.getName());
                 }
             } finally {
                 db.close(); //always close

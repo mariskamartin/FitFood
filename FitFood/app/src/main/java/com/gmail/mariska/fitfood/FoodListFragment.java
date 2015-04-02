@@ -63,7 +63,7 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
 
     private FoodListAdapter mFoodListAdapter;
     private ListView mListView;
-    private String mDefaultFoodListSortOrder = FoodEntry.COLUMN_CREATED + " DESC";
+    private String mDefaultFoodListSortOrder = FoodEntry.COLUMN_UPDATED + " DESC";
 
 
     public FoodListFragment() {

@@ -1,10 +1,14 @@
 package com.gmail.mariska.fitfood;
 
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +17,7 @@ import android.view.MenuItem;
 
 import com.gmail.mariska.fitfood.data.FitFoodContract;
 import com.gmail.mariska.fitfood.data.FitFoodDbHelper;
-import com.gmail.mariska.fitfood.sync.FetchFoodTask;
+import com.gmail.mariska.fitfood.sync.FitFoodSyncAdapter;
 
 import java.util.Date;
 
@@ -25,7 +29,32 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
 
     private static final String FOOD_DETAIL_FRAGMENT_TAG = "FOOD_DETAIL_FRAGMENT_TAG";
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    /**
+     * Own private broadcast intent receiver
+     */
+    private BroadcastReceiver myReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            // refresh the list
+            Log.d(LOG_TAG, "BroadcastReceiver - onReceive");
+            FoodListFragment fragment = (FoodListFragment) getSupportFragmentManager().findFragmentById(R.id.main_list_container);
+            fragment.restartFoodLoader();
+        }
+    };
     private boolean mTwoPane = false;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Register mMessageReceiver to receive messages.
+        this.registerReceiver(myReceiver, new IntentFilter("my-event"));
+    }
+
+    @Override
+    protected void onPause() {
+        // Unregister since the activity is not visible
+        this.unregisterReceiver(myReceiver);
+        super.onPause();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +78,8 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
         } else {
             mTwoPane = false;
         }
+
+        FitFoodSyncAdapter.initializeSyncAdapter(this);
 
         Log.v(LOG_TAG, "twoPane MODE = " + mTwoPane);
     }
@@ -83,10 +114,9 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
     }
 
     private void onRefreshAction() {
-        updateFoodData();
+        Log.v(LOG_TAG, "calling sync foods data...");
 
-//        FoodListFragment fragment = (FoodListFragment) getSupportFragmentManager().findFragmentById(R.id.main_list_container);
-//        fragment.restartFoodLoader();
+        FitFoodSyncAdapter.syncImmediately(this);
     }
 
     private void onGenerateDataAction() {
@@ -105,11 +135,6 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
         fragment.restartFoodLoader();
     }
 
-    private void updateFoodData() {
-        Log.v(LOG_TAG, "calling updateFoodData...");
-        FetchFoodTask task = new FetchFoodTask(this);
-        task.execute();
-    }
 
     static ContentValues createSaladFoodValues(int i) {
         // Create a new map of values, where column names are the keys
@@ -148,4 +173,6 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
             startActivity(intent);
         }
     }
+
+
 }

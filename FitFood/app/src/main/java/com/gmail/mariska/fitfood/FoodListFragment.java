@@ -41,12 +41,6 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
      * Definition of columns for loading data
      */
     private static final String[] FOOD_COLUMNS = {
-            // In this case the id needs to be fully qualified with a table name, since
-            // the content provider joins the location & weather tables in the background
-            // (both have an _id column)
-            // On the one hand, that's annoying.  On the other, you can search the weather table
-            // using the location set by the user, which is only in the Location table.
-            // So the convenience is worth it.
             FoodEntry.TABLE_NAME + "." + FoodEntry._ID,
             FoodEntry.COLUMN_NAME,
             FoodEntry.COLUMN_TEXT,
@@ -56,9 +50,6 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
             FoodEntry.COLUMN_RATING,
             FoodEntry.COLUMN_IMG
     };
-
-    // These indices are tied to FORECAST_COLUMNS.  If FORECAST_COLUMNS changes, these
-    // must change.
     static final int COL_FOOD_ID = 0;
     static final int COL_FOOD_NAME = 1;
     static final int COL_FOOD_TEXT = 2;
@@ -141,8 +132,6 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
                 }
             });
 
-            // When using the support library, the setOnActionExpandListener() method is
-            // static and accepts the MenuItem object as an argument
             MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
                 @Override
                 public boolean onMenuItemActionCollapse(MenuItem item) {

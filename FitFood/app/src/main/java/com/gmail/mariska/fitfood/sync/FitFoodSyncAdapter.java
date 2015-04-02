@@ -7,14 +7,12 @@ import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -24,12 +22,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.support.v4.content.LocalBroadcastManager;
-import android.text.format.Time;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.gmail.mariska.fitfood.FoodListFragment;
 import com.gmail.mariska.fitfood.MainActivity;
 import com.gmail.mariska.fitfood.R;
 import com.gmail.mariska.fitfood.Utility;
@@ -47,26 +42,24 @@ import java.util.List;
 
 
 public class FitFoodSyncAdapter extends AbstractThreadedSyncAdapter {
-    public static final String LOG_TAG = FitFoodSyncAdapter.class.getSimpleName();
-    // 60 seconds (1 minute) * (60*24) = 24 hours
-    public static final int SYNC_INTERVAL = 60 * (60*24);
-
+    public static final String INTENT_TYPE_SERVICE_SYNC = "INTENT_TYPE_SERVICE_SYNC";
+    private static final String LOG_TAG = FitFoodSyncAdapter.class.getSimpleName();
+    private static final int SYNC_INTERVAL = 60 * (60*24); // 60 seconds (1 minute) * (60*24) = 24 hours
     private static final String LAST_SERVER_UPDATE = "LAST_SERVER_UPDATE";
     private static final long DEFAULT_START_DATE = 1420070400000L; //01.01.2015
-    private final Context mContext;
+    private static final int FOOD_NOTIFICATION_ID = 3004;
 
     public FitFoodSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
-        mContext = context;
     }
 
     /**
      * Perform synchronisation for Food data
-     * @param account
-     * @param extras
-     * @param authority
-     * @param provider
-     * @param syncResult
+     * @param account -
+     * @param extras -
+     * @param authority -
+     * @param provider -
+     * @param syncResult -
      */
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
@@ -77,7 +70,7 @@ public class FitFoodSyncAdapter extends AbstractThreadedSyncAdapter {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
-        String foodsJsonStr = null;
+        String foodsJsonStr;
 
         try {
             final String FITFOOD_BASE_URL = "http://fitfood-mariskamartin.rhcloud.com/api/v1/foods/query?";
@@ -127,6 +120,8 @@ public class FitFoodSyncAdapter extends AbstractThreadedSyncAdapter {
                     long rowId = db.replaceOrThrow(FitFoodContract.FoodEntry.TABLE_NAME, null, foodValues);
                     Log.d(LOG_TAG, "inserted rodID = " + rowId);
                     Log.d(LOG_TAG, "added or updated " + food.getName());
+//                    Uri insertFoodUri = getContext().getContentResolver().insert(FitFoodContract.FoodEntry.buildFoodAllUri(), foodValues);
+//                    Log.d(LOG_TAG, "inserted food uri = " + insertFoodUri); //this gets complicated when it it sync from another process
                 }
             } finally {
                 db.close(); //always close
@@ -137,12 +132,12 @@ public class FitFoodSyncAdapter extends AbstractThreadedSyncAdapter {
             editor.putLong(LAST_SERVER_UPDATE, new Date().getTime());
             editor.commit();
 
-            notifyAboutNewFoods(newFoods);
+            notifyAboutNewFoods(newFoods, getContext());
 
 
             Log.d(LOG_TAG, "try to refresh FoodLoader in FoodListFragment");
             //send intent to perform activity refresh
-            Intent intent = new Intent("my-event");
+            Intent intent = new Intent(INTENT_TYPE_SERVICE_SYNC);
             // some data not important
             intent.putExtra("SERVICE_FOODS_UPDATE", true);
             getContext().sendBroadcast(intent); // finally broadcast
@@ -164,16 +159,15 @@ public class FitFoodSyncAdapter extends AbstractThreadedSyncAdapter {
                 }
             }
         }
-        return;
     }
 
     /**
      * Internally performs notifications about new arrived foods
      * @param newFoods list of new foods
      */
-    private void notifyAboutNewFoods(List<Food> newFoods) {
+    private static void notifyAboutNewFoods(List<Food> newFoods, Context context) {
         Log.v(LOG_TAG, "notifyAboutNewFoods start");
-        Context context = getContext();
+
         //checking the last update and notify if it' the first of the day
 //        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 //        String displayNotificationsKey = context.getString(R.string.pref_enable_notifications_key);
@@ -188,70 +182,57 @@ public class FitFoodSyncAdapter extends AbstractThreadedSyncAdapter {
 //            Log.d(LOG_TAG, "should has notificate user = " + (System.currentTimeMillis() - lastSync >= DAY_IN_MILLIS));
 //            if (System.currentTimeMillis() - lastSync >= DAY_IN_MILLIS) {
                 // Last sync was more than 1 day ago, let's send a notification with the weather.
-//                String locationQuery = Utility.getPreferredLocation(context);
-//                Uri weatherUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(locationQuery, System.currentTimeMillis());
 
-                // we'll query our contentProvider, as always
-//                Cursor cursor = context.getContentResolver().query(weatherUri, NOTIFY_WEATHER_PROJECTION, null, null, null);
+        if (newFoods.size() > 0){
+            Resources resources = context.getResources();
+            Food firstFood = newFoods.get(0);
+            Bitmap largeIcon;
+            if (firstFood.getImg() != null) {
+                largeIcon = BitmapFactory.decodeByteArray(firstFood.getImg(), 0, firstFood.getImg().length);
+            } else {
+                largeIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.noimage);
+            }
+            int height = (int) resources.getDimension(android.R.dimen.notification_large_icon_height);
+            int width = (int) resources.getDimension(android.R.dimen.notification_large_icon_width);
+            //fix large icon
+            largeIcon = Bitmap.createScaledBitmap(largeIcon, width, height, true);
 
-//                if (cursor.moveToFirst()) {
-//                    int weatherId = cursor.getInt(INDEX_WEATHER_ID);
-//                    double high = cursor.getDouble(INDEX_MAX_TEMP);
-//                    double low = cursor.getDouble(INDEX_MIN_TEMP);
-//                    String desc = cursor.getString(INDEX_SHORT_DESC);
+            StringBuilder sb = new StringBuilder();
+            for (Food food : newFoods) {
+                if (sb.length() > 0) {
+                    sb.append(", ");
+                }
+                sb.append(food.getName());
+            }
+            Log.d(LOG_TAG, "creates notification");
+            // NotificationCompatBuilder is a very convenient way to build backward-compatible
+            // notifications.  Just throw in some data.
+            NotificationCompat.Builder mBuilder =
+                    new NotificationCompat.Builder(context)
+                            .setAutoCancel(true)
+                            .setColor(resources.getColor(R.color.fitfood_light_green))
+                            .setSmallIcon(R.mipmap.ic_launcher)
+                            .setLargeIcon(largeIcon)
+                            .setContentTitle(String.format(resources.getString(R.string.notification_downloaded), newFoods.size()))
+                            .setContentText(sb.toString());
+
+            // Make something interesting happen when the user clicks on the notification.
+            // In this case, opening the app is sufficient.
+            Intent resultIntent = new Intent(context, MainActivity.class);
 //
-//                    int iconId = Utility.getIconResourceForWeatherCondition(weatherId);
-//                    Resources resources = context.getResources();
-//                    Bitmap largeIcon = BitmapFactory.decodeResource(resources,
-//                            Utility.getArtResourceForWeatherCondition(weatherId));
-//                    String title = context.getString(R.string.app_name);
-//
-//                    // Define the text of the forecast.
-//                    String contentText = String.format(context.getString(R.string.format_notification),
-//                            desc,
-//                            Utility.formatTemperature(context, high),
-//                            Utility.formatTemperature(context, low));
-//
-//                    // NotificationCompatBuilder is a very convenient way to build backward-compatible
-//                    // notifications.  Just throw in some data.
-//                    NotificationCompat.Builder mBuilder =
-//                            new NotificationCompat.Builder(getContext())
-//                                    .setColor(resources.getColor(R.color.sunshine_light_blue))
-//                                    .setSmallIcon(iconId)
-//                                    .setLargeIcon(largeIcon)
-//                                    .setContentTitle(title)
-//                                    .setContentText(contentText);
-//
-//                    // Make something interesting happen when the user clicks on the notification.
-//                    // In this case, opening the app is sufficient.
-//                    Intent resultIntent = new Intent(context, MainActivity.class);
-//
-//                    // The stack builder object will contain an artificial back stack for the
-//                    // started Activity.
-//                    // This ensures that navigating backward from the Activity leads out of
-//                    // your application to the Home screen.
-//                    TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-//                    stackBuilder.addNextIntent(resultIntent);
-//                    PendingIntent resultPendingIntent =
-//                            stackBuilder.getPendingIntent(
-//                                    0,
-//                                    PendingIntent.FLAG_UPDATE_CURRENT
-//                            );
-//                    mBuilder.setContentIntent(resultPendingIntent);
-//
-//                    NotificationManager mNotificationManager =
-//                            (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-//                    // WEATHER_NOTIFICATION_ID allows you to update the notification later on.
-//                    mNotificationManager.notify(WEATHER_NOTIFICATION_ID, mBuilder.build());
-//
-//                    //refreshing last sync
-//                    SharedPreferences.Editor editor = prefs.edit();
-//                    editor.putLong(lastNotificationKey, System.currentTimeMillis());
-//                    editor.commit();
-//                }
-//                cursor.close();
-//            }
-//        }
+            // The stack builder object will contain an artificial back stack for the
+            // started Activity.
+            // This ensures that navigating backward from the Activity leads out of
+            // your application to the Home screen.
+            TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+            stackBuilder.addNextIntent(resultIntent);
+            PendingIntent resultPendingIntent = stackBuilder.getPendingIntent( 0, PendingIntent.FLAG_UPDATE_CURRENT);
+            mBuilder.setContentIntent(resultPendingIntent);
+
+            NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.notify(FOOD_NOTIFICATION_ID, mBuilder.build());
+            Log.d(LOG_TAG, "notification end");
+        }
     }
 
     /**
@@ -285,7 +266,7 @@ public class FitFoodSyncAdapter extends AbstractThreadedSyncAdapter {
      * @return a fake account.
      */
     public static Account getSyncAccount(Context context) {
-        Log.d(LOG_TAG, "getSyncAccount - start");
+//        Log.d(LOG_TAG, "getSyncAccount - start");
         // Get an instance of the Android account manager
         AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
 

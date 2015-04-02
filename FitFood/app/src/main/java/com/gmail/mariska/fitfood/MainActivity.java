@@ -8,9 +8,8 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,7 +45,7 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
     protected void onResume() {
         super.onResume();
         // Register mMessageReceiver to receive messages.
-        this.registerReceiver(myReceiver, new IntentFilter("my-event"));
+        this.registerReceiver(myReceiver, new IntentFilter(FitFoodSyncAdapter.INTENT_TYPE_SERVICE_SYNC));
     }
 
     @Override
@@ -133,6 +132,7 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
 
         FoodListFragment fragment = (FoodListFragment) getSupportFragmentManager().findFragmentById(R.id.main_list_container);
         fragment.restartFoodLoader();
+
     }
 
 

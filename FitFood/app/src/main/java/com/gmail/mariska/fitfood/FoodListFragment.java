@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -154,7 +153,7 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
 
     /**
      * Search for foods and shows them in list.
-     * @param searchStr
+     * @param searchStr txt
      */
     public void listSearchedFood(String searchStr) {
         Log.v(LOG_TAG, "creates new cursor for: " + searchStr);
@@ -166,7 +165,7 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
      * Shows all foods.
      */
     public void listAllFood() {
-        Cursor foodCursor = getActivity().getContentResolver().query(FitFoodContract.FoodEntry.CONTENT_URI, null, null, null, mDefaultFoodListSortOrder );
+        Cursor foodCursor = getActivity().getContentResolver().query(FitFoodContract.FoodEntry.CONTENT_URI, null, null, null, mDefaultFoodListSortOrder);
         mFoodListAdapter.swapCursor(foodCursor);
     }
 
@@ -185,8 +184,8 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mFoodListAdapter.swapCursor(data);
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        mFoodListAdapter.swapCursor(cursor);
         if (mPosition != ListView.INVALID_POSITION) {
             mListView.smoothScrollToPosition(mPosition);
         }

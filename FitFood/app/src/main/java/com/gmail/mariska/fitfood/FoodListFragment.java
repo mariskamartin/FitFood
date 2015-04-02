@@ -33,7 +33,7 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
     /**
      * Food Loader ID
      */
-    private static final int FOOD_LOADER_ID = 0;
+    public static final int FOOD_LOADER_ID = 0;
 
     private int mPosition = ListView.INVALID_POSITION;
 

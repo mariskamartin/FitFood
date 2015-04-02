@@ -1,5 +1,7 @@
 package com.gmail.mariska.fitfood.sync;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,6 +14,9 @@ import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gmail.mariska.fitfood.FoodListFragment;
+import com.gmail.mariska.fitfood.MainActivity;
+import com.gmail.mariska.fitfood.R;
 import com.gmail.mariska.fitfood.Utility;
 import com.gmail.mariska.fitfood.data.FitFoodContract;
 import com.gmail.mariska.fitfood.data.FitFoodDbHelper;
@@ -36,6 +41,16 @@ public class FetchFoodTask extends AsyncTask<String, Void, Void> {
 
     public FetchFoodTask(Context context) {
         mContext = context;
+    }
+
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+        if (mContext instanceof MainActivity) {
+            MainActivity a = (MainActivity) mContext;
+            FoodListFragment fragment = (FoodListFragment) a.getSupportFragmentManager().findFragmentById(R.id.main_list_container);
+            fragment.restartFoodLoader();
+        }
     }
 
     @Override

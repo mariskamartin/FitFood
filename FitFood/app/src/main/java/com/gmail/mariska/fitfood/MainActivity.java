@@ -100,6 +100,7 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
 
         switch (id){
             case R.id.action_settings:
+                startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             case R.id.action_refresh:
                 onRefreshAction();

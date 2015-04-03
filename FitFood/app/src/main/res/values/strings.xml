@@ -19,5 +19,12 @@
     <string name="search">Search</string>
     <string name="search_hint">search food</string>
     <string name="notification_downloaded">Downloaded %d foods. Yeah!</string>
+    <string name="pref_common_category_title">Common settings</string>
+    <string name="pref_enable_notifications_label">Notifications</string>
+    <string name="pref_enable_notifications_default">true</string>
+    <string name="pref_enable_notifications_true">notifications is enabled</string>
+    <string name="pref_enable_notifications_false">notifications is disabled</string>
+    <string name="pref_enable_notifications_key">NOTIFICATIONS_ENABLED</string>
+    <string name="title_activity_settings">Settings</string>
 
 </resources>

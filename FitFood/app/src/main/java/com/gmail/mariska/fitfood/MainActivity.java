@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.gmail.mariska.fitfood.data.FitFoodContract;
 import com.gmail.mariska.fitfood.data.FitFoodDbHelper;
@@ -33,10 +34,15 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
      */
     private BroadcastReceiver myReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
-            // refresh the list
             Log.d(LOG_TAG, "BroadcastReceiver - onReceive");
-            FoodListFragment fragment = (FoodListFragment) getSupportFragmentManager().findFragmentById(R.id.main_list_container);
-            fragment.restartFoodLoader();
+            int newFoodCount = intent.getIntExtra(FitFoodSyncAdapter.SERVICE_FOODS_UPDATE_COUNT_KEY, 0);
+            if (newFoodCount > 0) {
+                // refresh the list
+                FoodListFragment fragment = (FoodListFragment) getSupportFragmentManager().findFragmentById(R.id.main_list_container);
+                fragment.restartFoodLoader();
+            } else {
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.notification_sync_nodata), Toast.LENGTH_SHORT).show();
+            }
         }
     };
     private boolean mTwoPane = false;
@@ -45,7 +51,7 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
     protected void onResume() {
         super.onResume();
         // Register mMessageReceiver to receive messages.
-        this.registerReceiver(myReceiver, new IntentFilter(FitFoodSyncAdapter.INTENT_TYPE_SERVICE_SYNC));
+        this.registerReceiver(myReceiver, new IntentFilter(FitFoodSyncAdapter.INTENT_FOOD_SERVICE_SYNC));
     }
 
     @Override
@@ -114,8 +120,7 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
     }
 
     private void onRefreshAction() {
-        Log.v(LOG_TAG, "calling sync foods data...");
-
+        Toast.makeText(getApplicationContext(), getResources().getString(R.string.notification_user_start_sync), Toast.LENGTH_SHORT).show();
         FitFoodSyncAdapter.syncImmediately(this);
     }
 

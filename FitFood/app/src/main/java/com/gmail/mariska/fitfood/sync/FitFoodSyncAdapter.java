@@ -42,7 +42,8 @@ import java.util.List;
 
 
 public class FitFoodSyncAdapter extends AbstractThreadedSyncAdapter {
-    public static final String INTENT_TYPE_SERVICE_SYNC = "INTENT_TYPE_SERVICE_SYNC";
+    public static final String INTENT_FOOD_SERVICE_SYNC = "INTENT_FOOD_SERVICE_SYNC";
+    public static final String SERVICE_FOODS_UPDATE_COUNT_KEY = "SERVICE_FOODS_UPDATE_COUNT";
     private static final String LOG_TAG = FitFoodSyncAdapter.class.getSimpleName();
     private static final int SYNC_INTERVAL = 60 * (60*24); // 60 seconds (1 minute) * (60*24) = 24 hours
     private static final String LAST_SERVER_UPDATE = "LAST_SERVER_UPDATE";
@@ -137,9 +138,9 @@ public class FitFoodSyncAdapter extends AbstractThreadedSyncAdapter {
 
             Log.d(LOG_TAG, "try to refresh FoodLoader in FoodListFragment");
             //send intent to perform activity refresh
-            Intent intent = new Intent(INTENT_TYPE_SERVICE_SYNC);
+            Intent intent = new Intent(INTENT_FOOD_SERVICE_SYNC);
             // some data not important
-            intent.putExtra("SERVICE_FOODS_UPDATE", true);
+            intent.putExtra(SERVICE_FOODS_UPDATE_COUNT_KEY, newFoods.size());
             getContext().sendBroadcast(intent); // finally broadcast
 
         } catch (SQLException e) {

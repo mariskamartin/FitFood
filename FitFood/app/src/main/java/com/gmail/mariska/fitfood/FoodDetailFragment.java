@@ -60,6 +60,7 @@ public class FoodDetailFragment extends Fragment implements LoaderManager.Loader
 
     private ShareActionProvider mShareActionProvider;
     private String mFoodTxt;
+    private String mFoodName;
     private Uri mUri;
 
     private ImageView mImgView;
@@ -124,20 +125,20 @@ public class FoodDetailFragment extends Fragment implements LoaderManager.Loader
         }
         Log.v(LOG_TAG, "onLoadFinished - loading");
 
-        String foodName = cursor.getString(COL_FOOD_NAME);
+        mFoodName = cursor.getString(COL_FOOD_NAME);
         String foodText = cursor.getString(COL_FOOD_TEXT);
         String author = cursor.getString(COL_FOOD_AUTHOR);
         String rating = cursor.getInt(COL_FOOD_RATING) + "/10";
         byte[] blob = cursor.getBlob(COL_FOOD_IMG);
 
-        mFoodTxt = String.format("Food: %s\nAuthor:%s (rating %s)\n%s\n", foodName, author, rating, foodText);
+        mFoodTxt = String.format("Food: %s\nAuthor:%s (rating %s)\n%s\n", mFoodName, author, rating, foodText);
 
         if(blob != null) {
             mImgView.setImageBitmap(BitmapFactory.decodeByteArray(blob, 0, blob.length));
         } else {
             mImgView.setImageResource(R.drawable.noimage);
         }
-        mFoodNameView.setText(foodName);
+        mFoodNameView.setText(mFoodName);
         mAuthorView.setText(author);
         mRatingView.setText(rating);
         mFoodTextView.setText(foodText);
@@ -158,9 +159,9 @@ public class FoodDetailFragment extends Fragment implements LoaderManager.Loader
 
     private Intent createShareForecastIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        //FIXME - remake it to Rich Content
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET); //we support API v10
         shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, mFoodName);
         shareIntent.putExtra(Intent.EXTRA_TEXT, mFoodTxt + FOOD_SHARE_HASHTAG);
         return shareIntent;
     }

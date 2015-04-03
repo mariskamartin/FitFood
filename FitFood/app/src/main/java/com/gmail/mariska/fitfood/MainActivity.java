@@ -111,9 +111,6 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
             case R.id.action_refresh:
                 onRefreshAction();
                 return true;
-            case R.id.action_generate:
-                onGenerateDataAction();
-                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -122,38 +119,6 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
     private void onRefreshAction() {
         Toast.makeText(getApplicationContext(), getResources().getString(R.string.notification_user_start_sync), Toast.LENGTH_SHORT).show();
         FitFoodSyncAdapter.syncImmediately(this);
-    }
-
-    private void onGenerateDataAction() {
-
-        FitFoodDbHelper dbHelper = new FitFoodDbHelper(this);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-        for (int i = 0; i < 10; i++) {
-            ContentValues testValues = createSaladFoodValues(i);
-            long rowId = db.insert(FitFoodContract.FoodEntry.TABLE_NAME, null, testValues);
-            Log.d(LOG_TAG, "inserted rodID = " + rowId);
-        }
-        db.close();
-
-        FoodListFragment fragment = (FoodListFragment) getSupportFragmentManager().findFragmentById(R.id.main_list_container);
-        fragment.restartFoodLoader();
-
-    }
-
-
-    static ContentValues createSaladFoodValues(int i) {
-        // Create a new map of values, where column names are the keys
-        long actTime = (long) (new Date().getTime() + (Math.random() * 1000));
-        ContentValues foodValues = new ContentValues();
-        foodValues.put(FitFoodContract.FoodEntry.COLUMN_AUTHOR, "Franta Pepa Jednička");
-        foodValues.put(FitFoodContract.FoodEntry.COLUMN_CREATED, actTime);
-        foodValues.put(FitFoodContract.FoodEntry.COLUMN_UPDATED, actTime);
-        foodValues.put(FitFoodContract.FoodEntry.COLUMN_NAME, "Test Salad " + i + ".");
-        foodValues.put(FitFoodContract.FoodEntry.COLUMN_TEXT, "How to make František's salads. " + i);
-        foodValues.put(FitFoodContract.FoodEntry.COLUMN_RATING, Math.min(Math.random() * 10, 10));
-        foodValues.put(FitFoodContract.FoodEntry.COLUMN_IMG, (byte[]) null);
-        return foodValues;
     }
 
     /**
@@ -179,6 +144,4 @@ public class MainActivity extends ActionBarActivity implements FoodListFragment.
             startActivity(intent);
         }
     }
-
-
 }

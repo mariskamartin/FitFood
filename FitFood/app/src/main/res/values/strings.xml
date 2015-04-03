@@ -28,6 +28,6 @@
 
     <string name="notification_downloaded">Downloaded %d foods. Yeah!</string>
     <string name="notification_user_start_sync">Starts data synchronisation. Please wait...</string>
-    <string name="notification_sync_nodata">No new foods, Today.</string>
+    <string name="notification_sync_nodata">All foods synchronised, Today.</string>
 
 </resources>

@@ -13,7 +13,6 @@
             android:id="@+id/detail_img_icon"
             android:layout_width="match_parent"
             android:layout_height="@dimen/food_detail_img_height"
-            android:src="@drawable/greeksalad"
             android:scaleType="centerCrop" />
 
         <LinearLayout
@@ -28,8 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:textColor="@color/black"
-                android:textSize="24sp"
-                android:text="GREEK SALAD" />
+                android:textSize="24sp" />
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -43,7 +41,6 @@
                     android:layout_width="0dp"
                     android:textColor="@color/grey_700"
                     android:textSize="16sp"
-                    android:text="Martin M."
                     android:layout_weight="5" />
 
                 <TextView
@@ -53,7 +50,6 @@
                     android:layout_width="0dp"
                     android:textColor="@color/grey_700"
                     android:textSize="16sp"
-                    android:text="5/10"
                     android:layout_weight="1"
                     android:gravity="end" />
             </LinearLayout>
@@ -64,7 +60,6 @@
                 android:layout_height="fill_parent"
                 android:textAppearance="?android:textAppearanceLarge"
                 android:textColor="@color/grey_700"
-                android:text="Food: Greek Salad 8. Author:Martin M. (rating 1/10) How to make salads. 8 #FitFoodApp and ahojda akorderom odsmf ofk "
                 android:layout_marginTop="8dp" />
         </LinearLayout>
 

@@ -3,9 +3,9 @@ package com.gmail.mariska.fitfood.sync;
 import java.util.Date;
 
 /**
- * Created by mar on 31. 3. 2015.
+ * Model of food data. Received from server. Immutable for application
  */
-public class Food {
+public class FoodModel {
     private int id;
     private String name;
     private String text;
@@ -15,21 +15,22 @@ public class Food {
     private Date updated;
     private byte[] img;
 
-    private Food() {
+    private FoodModel() {
         //jackson
     }
 
-    public Food(int id, String name, String text, String author){
-        this(id, name, text, author, null, 0);
-    }
-
-    public Food(int id, String name, String text, String author, byte[] img, int rating){
+    public FoodModel(int id, String name, String text, String author){
+        this();
         this.id = id;
         this.name = name;
         this.text = text;
         this.author = author;
         this.created = new Date();
         this.updated = new Date();
+    }
+
+    public FoodModel(int id, String name, String text, String author, byte[] img, int rating){
+        this(id, name, text, author);
         this.img = img;
         this.rating = rating;
     }
@@ -66,13 +67,4 @@ public class Food {
         return img;
     }
 
-
-/*          FoodEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                FoodEntry.COLUMN_NAME+ " TEXT NOT NULL, " +
-                FoodEntry.COLUMN_TEXT + " TEXT NOT NULL, " +
-                FoodEntry.COLUMN_AUTHOR + " TEXT NOT NULL, " +
-                FoodEntry.COLUMN_CREATED + " INTEGER NOT NULL, " +
-                FoodEntry.COLUMN_UPDATED + " INTEGER NOT NULL, " +
-                FoodEntry.COLUMN_RATING + " INTEGER, " +
-                FoodEntry.COLUMN_IMG + " BLOB " +*/
 }

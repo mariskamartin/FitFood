@@ -25,7 +25,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.gmail.mariska.fitfood.MainActivity;
+import com.gmail.mariska.fitfood.FoodListActivity;
 import com.gmail.mariska.fitfood.R;
 import com.gmail.mariska.fitfood.Utility;
 import com.gmail.mariska.fitfood.data.FitFoodContract;
@@ -101,14 +101,14 @@ public class FitFoodSyncAdapter extends AbstractThreadedSyncAdapter {
                 return;
             }
             foodsJsonStr = buffer.toString();
-            List<Food> newFoods = Utility.fromJson(foodsJsonStr, new TypeReference<List<Food>>() {
+            List<FoodModel> newFoods = Utility.fromJson(foodsJsonStr, new TypeReference<List<FoodModel>>() {
             });
             Log.d(LOG_TAG, "count of new foods = " + newFoods.size());
 
             FitFoodDbHelper dbHelper = new FitFoodDbHelper(getContext());
             SQLiteDatabase db = dbHelper.getWritableDatabase();
             try {
-                for (Food food : newFoods) {
+                for (FoodModel food : newFoods) {
                     ContentValues foodValues = new ContentValues();
                     foodValues.put(FitFoodContract.FoodEntry._ID, food.getId());
                     foodValues.put(FitFoodContract.FoodEntry.COLUMN_AUTHOR, food.getAuthor());
@@ -147,7 +147,6 @@ public class FitFoodSyncAdapter extends AbstractThreadedSyncAdapter {
             Log.e(LOG_TAG, "Error in inserting data.", e);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
-            return;
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -166,7 +165,7 @@ public class FitFoodSyncAdapter extends AbstractThreadedSyncAdapter {
      * Internally performs notifications about new arrived foods
      * @param newFoods list of new foods
      */
-    private static void notifyAboutNewFoods(List<Food> newFoods, Context context) {
+    private static void notifyAboutNewFoods(List<FoodModel> newFoods, Context context) {
         Log.v(LOG_TAG, "notifyAboutNewFoods start");
 
         //checking the last update and notify if it' the first of the day
@@ -186,7 +185,7 @@ public class FitFoodSyncAdapter extends AbstractThreadedSyncAdapter {
 
         if (newFoods.size() > 0){
             Resources resources = context.getResources();
-            Food firstFood = newFoods.get(0);
+            FoodModel firstFood = newFoods.get(0);
             Bitmap largeIcon;
             if (firstFood.getImg() != null) {
                 largeIcon = BitmapFactory.decodeByteArray(firstFood.getImg(), 0, firstFood.getImg().length);
@@ -199,7 +198,7 @@ public class FitFoodSyncAdapter extends AbstractThreadedSyncAdapter {
             largeIcon = Bitmap.createScaledBitmap(largeIcon, width, height, true);
 
             StringBuilder sb = new StringBuilder();
-            for (Food food : newFoods) {
+            for (FoodModel food : newFoods) {
                 if (sb.length() > 0) {
                     sb.append(", ");
                 }
@@ -219,7 +218,7 @@ public class FitFoodSyncAdapter extends AbstractThreadedSyncAdapter {
 
             // Make something interesting happen when the user clicks on the notification.
             // In this case, opening the app is sufficient.
-            Intent resultIntent = new Intent(context, MainActivity.class);
+            Intent resultIntent = new Intent(context, FoodListActivity.class);
 //
             // The stack builder object will contain an artificial back stack for the
             // started Activity.

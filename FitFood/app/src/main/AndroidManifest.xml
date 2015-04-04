@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".FoodListActivity"
             android:label="@string/app_name"
             android:theme="@style/FitFoodTheme">
             <intent-filter>
@@ -27,19 +27,19 @@
         <activity
             android:name=".FoodDetailActivity"
             android:label="@string/title_activity_food_detail"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".FoodListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.gmail.mariska.fitfood.MainActivity" />
+                android:value=".FoodListActivity" />
         </activity>
         <activity
             android:name=".SettingsActivity"
             android:theme="@style/SettingsTheme"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".FoodListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.gmail.mariska.fitfood.MainActivity" />
+                android:value=".FoodListActivity" />
         </activity>
 
 

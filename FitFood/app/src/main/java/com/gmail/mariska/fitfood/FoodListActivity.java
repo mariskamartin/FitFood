@@ -1,12 +1,10 @@
 package com.gmail.mariska.fitfood;
 
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -15,20 +13,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.gmail.mariska.fitfood.data.FitFoodContract;
-import com.gmail.mariska.fitfood.data.FitFoodDbHelper;
 import com.gmail.mariska.fitfood.sync.FitFoodSyncAdapter;
-
-import java.util.Date;
 
 
 /**
  * Main FIt Food activity.
  */
-public class MainActivity extends ActionBarActivity implements FoodListFragment.Callback {
+public class FoodListActivity extends ActionBarActivity implements FoodListFragment.Callback {
 
     private static final String FOOD_DETAIL_FRAGMENT_TAG = "FOOD_DETAIL_FRAGMENT_TAG";
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final String LOG_TAG = FoodListActivity.class.getSimpleName();
     /**
      * Own private broadcast intent receiver
      */

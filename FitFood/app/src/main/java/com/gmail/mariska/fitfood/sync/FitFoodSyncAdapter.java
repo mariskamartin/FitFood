@@ -42,6 +42,8 @@ import java.util.List;
 
 
 public class FitFoodSyncAdapter extends AbstractThreadedSyncAdapter {
+
+    public static final String SERVER_BASE_URL = "http://fitfood-mariskamartin.rhcloud.com/";
     public static final String INTENT_FOOD_SERVICE_SYNC = "INTENT_FOOD_SERVICE_SYNC";
     public static final String SERVICE_FOODS_UPDATE_COUNT_KEY = "SERVICE_FOODS_UPDATE_COUNT";
     private static final String LOG_TAG = FitFoodSyncAdapter.class.getSimpleName();
@@ -74,7 +76,7 @@ public class FitFoodSyncAdapter extends AbstractThreadedSyncAdapter {
         String foodsJsonStr;
 
         try {
-            final String FITFOOD_BASE_URL = "http://fitfood-mariskamartin.rhcloud.com/api/v1/foods/query?";
+            final String FITFOOD_BASE_URL = SERVER_BASE_URL + "api/v1/foods/query?";
             Uri builtUri = Uri.parse(FITFOOD_BASE_URL).buildUpon().appendQueryParameter("since", String.valueOf(lastUpdate)).build();
 
             URL url = new URL(builtUri.toString());

@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gmail.mariska.fitfood.data.FitFoodContract.FoodEntry;
+import com.gmail.mariska.fitfood.sync.FitFoodSyncAdapter;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -166,7 +167,7 @@ public class FoodDetailFragment extends Fragment implements LoaderManager.Loader
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET); //we support API v10
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, mFoodName);
-        shareIntent.putExtra(Intent.EXTRA_TEXT, mFoodTxt + FOOD_SHARE_HASHTAG);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, mFoodTxt + FOOD_SHARE_HASHTAG + "\n" + FitFoodSyncAdapter.SERVER_BASE_URL);
         return shareIntent;
     }
 

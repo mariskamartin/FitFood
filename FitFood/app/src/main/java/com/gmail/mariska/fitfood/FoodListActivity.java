@@ -77,7 +77,9 @@ public class FoodListActivity extends ActionBarActivity implements FoodListFragm
             mTwoPane = false;
         }
         FoodListFragment foodListFragment = ((FoodListFragment) getSupportFragmentManager().findFragmentById(R.id.main_list_container));
-        foodListFragment.setTwoPaneLayout(mTwoPane);
+        if(foodListFragment != null) {
+            foodListFragment.setTwoPaneLayout(mTwoPane);
+        }
 
         FitFoodSyncAdapter.initializeSyncAdapter(this);
 

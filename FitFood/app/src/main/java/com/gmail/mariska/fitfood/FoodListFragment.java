@@ -165,7 +165,6 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
                 searchItem.expandActionView();
                 searchView.setQuery(mCurrentQuery, false);
                 searchView.clearFocus();
-                Toast.makeText(getActivity().getApplicationContext(), mCurrentQuery, Toast.LENGTH_SHORT).show();
             }
 
             //add listener

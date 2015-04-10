@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -64,7 +63,7 @@ public class FoodListActivity extends ActionBarActivity implements FoodListFragm
             mTwoPane = true;
 
             //force only landscape orientation
-            this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//            this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
@@ -77,6 +76,8 @@ public class FoodListActivity extends ActionBarActivity implements FoodListFragm
         } else {
             mTwoPane = false;
         }
+        FoodListFragment foodListFragment = ((FoodListFragment) getSupportFragmentManager().findFragmentById(R.id.main_list_container));
+        foodListFragment.setTwoPaneLayout(mTwoPane);
 
         FitFoodSyncAdapter.initializeSyncAdapter(this);
 

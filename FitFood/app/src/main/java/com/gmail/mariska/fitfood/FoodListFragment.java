@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -64,6 +65,7 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
     private FoodListAdapter mFoodListAdapter;
     private ListView mListView;
     private String mDefaultFoodListSortOrder = FoodEntry.COLUMN_UPDATED + " DESC";
+    private boolean mTwoPaneLayout;
 
 
     public FoodListFragment() {
@@ -188,6 +190,18 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
         mFoodListAdapter.swapCursor(cursor);
         if (mPosition != ListView.INVALID_POSITION) {
             mListView.smoothScrollToPosition(mPosition);
+        } else if(mTwoPaneLayout && cursor != null && cursor.moveToFirst()) {
+            //defaults to first item
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    mPosition = 0;
+                    mListView.performItemClick(
+                            mListView.getChildAt(mPosition),
+                            mPosition,
+                            mListView.getAdapter().getItemId(mPosition));
+                }
+            });
         }
     }
 
@@ -203,6 +217,10 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
             outState.putInt(SELECTED_ROW_KEY, mPosition);
         }
         super.onSaveInstanceState(outState);
+    }
+
+    public void setTwoPaneLayout(boolean twoPaneLayout) {
+        this.mTwoPaneLayout = twoPaneLayout;
     }
 
     public interface Callback {

@@ -1,5 +1,6 @@
 package com.gmail.mariska.fitfood;
 
+import android.annotation.TargetApi;
 import android.app.SearchManager;
 import android.content.Context;
 import android.database.Cursor;
@@ -13,6 +14,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.gmail.mariska.fitfood.data.FitFoodContract;
 import com.gmail.mariska.fitfood.data.FitFoodContract.FoodEntry;
@@ -35,6 +38,8 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
      * Food Loader ID
      */
     public static final int FOOD_LOADER_ID = 0;
+    private static final String CURRENT_SEARCH_QUERY_KEY = "CURRENT_SEARCH_QUERY_KEY";
+    private static final String SUBMITTED_SEARCH_QUERY_KEY = "SUBMITTED_SEARCH_QUERY_KEY";
 
     private int mPosition = ListView.INVALID_POSITION;
 
@@ -66,6 +71,8 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
     private ListView mListView;
     private String mDefaultFoodListSortOrder = FoodEntry.COLUMN_UPDATED + " DESC";
     private boolean mTwoPaneLayout;
+    private String mCurrentQuery = null;
+    private String mSubmittedQuery = null;
 
 
     public FoodListFragment() {
@@ -100,14 +107,21 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
             }
         });
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_ROW_KEY)) {
-            mPosition = savedInstanceState.getInt(SELECTED_ROW_KEY);
+        if (savedInstanceState != null) {
+            if(savedInstanceState.containsKey(SELECTED_ROW_KEY)) {
+                mPosition = savedInstanceState.getInt(SELECTED_ROW_KEY);
+            }
+            if(savedInstanceState.containsKey(CURRENT_SEARCH_QUERY_KEY)) {
+                mCurrentQuery = savedInstanceState.getString(CURRENT_SEARCH_QUERY_KEY);
+                mSubmittedQuery = savedInstanceState.getString(SUBMITTED_SEARCH_QUERY_KEY);
+            }
         }
 
         listAllFood();
         return rootView;
     }
 
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -117,12 +131,16 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
             SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
             // Assumes current activity is the searchable activity
             MenuItem searchItem = menu.findItem(R.id.action_search);
-            SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+            final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
             searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 public boolean onQueryTextChange(String s) {
                     Log.v(LOG_TAG, "Submitted search: " + s);
+                    //save state
+                    if(!TextUtils.isEmpty(s)){
+                        mCurrentQuery = s;
+                    }
                     return true;
                 }
 
@@ -130,10 +148,27 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
                 public boolean onQueryTextSubmit(String searchStr) {
                     Log.v(LOG_TAG, "Searching: " + searchStr);
                     listSearchedFood(searchStr.trim()); //because of automatic filling
+                    if(!TextUtils.isEmpty(searchStr)){
+                        mSubmittedQuery = searchStr;
+                    }
                     return true; //true - widget stay unfolded
                 }
             });
 
+            //restore state of searchView
+            if (!TextUtils.isEmpty(mSubmittedQuery)) {
+                String backup = mCurrentQuery;
+                searchView.setQuery(mSubmittedQuery, true);
+                mCurrentQuery = backup;
+            }
+            if (!TextUtils.isEmpty(mCurrentQuery)) {
+                searchItem.expandActionView();
+                searchView.setQuery(mCurrentQuery, false);
+                searchView.clearFocus();
+                Toast.makeText(getActivity().getApplicationContext(), mCurrentQuery, Toast.LENGTH_SHORT).show();
+            }
+
+            //add listener
             MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
                 @Override
                 public boolean onMenuItemActionCollapse(MenuItem item) {
@@ -216,6 +251,8 @@ public class FoodListFragment extends Fragment implements LoaderManager.LoaderCa
         if (mPosition != ListView.INVALID_POSITION) {
             outState.putInt(SELECTED_ROW_KEY, mPosition);
         }
+        outState.putString(CURRENT_SEARCH_QUERY_KEY, mCurrentQuery);
+        outState.putString(SUBMITTED_SEARCH_QUERY_KEY, mSubmittedQuery);
         super.onSaveInstanceState(outState);
     }
 
